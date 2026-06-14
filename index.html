@@ -34,8 +34,9 @@
             </div>
         </div>
 
-        <div class="player-wrapper">
-            <div class="video-container" id="videoContainer">
+        <div class="player-wrapper" id="playerWrapper">
+            <div class="main-content">
+                <div class="video-container" id="videoContainer">
                 <video id="videoElement"></video>
                 
                 <!-- Loading Overlay -->
@@ -83,6 +84,21 @@
                             </button>
                         </div>
                     </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Channel Sidebar -->
+            <div class="channel-sidebar glass" id="channelSidebar" style="display: none;">
+                <div class="sidebar-header">
+                    <h3>Channels <span id="channelCount" class="channel-count">0</span></h3>
+                    <div class="search-box">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="channelSearch" placeholder="Search channels...">
+                    </div>
+                </div>
+                <div class="channel-list" id="channelList">
+                    <!-- Channels injected here -->
                 </div>
             </div>
         </div>

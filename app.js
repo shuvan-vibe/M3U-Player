@@ -197,8 +197,98 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // --- Load Stream Logic ---
-    const loadStream = (url) => {
+    // --- Channel Sidebar Elements ---
+    const channelSidebar = document.getElementById('channelSidebar');
+    const channelList = document.getElementById('channelList');
+    const channelSearch = document.getElementById('channelSearch');
+    const channelCount = document.getElementById('channelCount');
+    let allChannels = [];
+
+    const renderChannels = (channels) => {
+        channelList.innerHTML = '';
+        channels.forEach(channel => {
+            const div = document.createElement('div');
+            div.className = 'channel-item';
+            div.textContent = channel.name;
+            div.addEventListener('click', () => {
+                document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
+                div.classList.add('active');
+                playStream(channel.url);
+            });
+            channelList.appendChild(div);
+        });
+        channelCount.textContent = channels.length;
+    };
+
+    channelSearch.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allChannels.filter(c => c.name.toLowerCase().includes(term));
+        renderChannels(filtered);
+    });
+
+    const parseM3U = (content, baseUrl) => {
+        const lines = content.split(/\r?\n/);
+        const channels = [];
+        let currentName = '';
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (line.startsWith('#EXTINF:')) {
+                const commaIndex = line.indexOf(',');
+                if (commaIndex !== -1) {
+                    currentName = line.substring(commaIndex + 1).trim();
+                } else {
+                    currentName = 'Unknown Channel';
+                }
+            } else if (line.length > 0 && !line.startsWith('#')) {
+                if (currentName) {
+                    let url = line;
+                    if (!url.startsWith('http')) {
+                        try {
+                            url = new URL(url, baseUrl).href;
+                        } catch(e) {}
+                    }
+                    channels.push({ name: currentName, url: url });
+                    currentName = '';
+                }
+            }
+        }
+        return channels;
+    };
+
+    const handleUrlInput = async (url) => {
+        if (!url) return;
+        loadingOverlay.classList.add('active');
+        
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Network response was not ok');
+            const content = await response.text();
+            
+            if (content.includes('#EXTINF')) {
+                allChannels = parseM3U(content, url);
+                if (allChannels.length > 0) {
+                    channelSidebar.style.display = 'flex';
+                    renderChannels(allChannels);
+                    const firstItem = document.querySelector('.channel-item');
+                    if (firstItem) firstItem.classList.add('active');
+                    playStream(allChannels[0].url);
+                    return;
+                }
+            }
+            
+            channelSidebar.style.display = 'none';
+            playStream(url);
+            
+        } catch (error) {
+            console.warn('Could not fetch playlist, assuming direct stream.', error);
+            channelSidebar.style.display = 'none';
+            playStream(url);
+        }
+    };
+
+    // --- Play Stream Logic ---
+    const playStream = (url) => {
         if (!url) return;
         
         loadingOverlay.classList.add('active');
@@ -258,12 +348,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     loadBtn.addEventListener('click', () => {
-        loadStream(streamUrlInput.value);
+        handleUrlInput(streamUrlInput.value);
     });
 
     streamUrlInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-            loadStream(streamUrlInput.value);
+            handleUrlInput(streamUrlInput.value);
         }
     });
 });
