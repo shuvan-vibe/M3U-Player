@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamLine - Premium M3U Player</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- HLS.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.12"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <i class="fa-solid fa-play"></i>
+                <h1>StreamLine</h1>
+            </div>
+            <p>Premium HLS / M3U Web Player</p>
+        </header>
+
+        <div class="input-section">
+            <div class="input-group">
+                <i class="fa-solid fa-link input-icon"></i>
+                <input type="text" id="streamUrl" placeholder="Paste your .m3u or .m3u8 link here...">
+                <button id="loadBtn">
+                    <i class="fa-solid fa-bolt"></i> Load Stream
+                </button>
+            </div>
+        </div>
+
+        <div class="player-wrapper">
+            <div class="video-container" id="videoContainer">
+                <video id="videoElement"></video>
+                
+                <!-- Loading Overlay -->
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="spinner"></div>
+                </div>
+
+                <!-- Custom Controls -->
+                <div class="controls-container glass" id="controlsContainer">
+                    <div class="progress-bar-container" id="progressBarContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+
+                    <div class="controls-main">
+                        <div class="controls-left">
+                            <button class="control-btn" id="playPauseBtn" title="Play/Pause">
+                                <i class="fa-solid fa-play" id="playIcon"></i>
+                            </button>
+                            
+                            <div class="volume-container">
+                                <button class="control-btn" id="muteBtn" title="Mute/Unmute">
+                                    <i class="fa-solid fa-volume-high" id="volumeIcon"></i>
+                                </button>
+                                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.05" value="1">
+                            </div>
+                            
+                            <div class="time-display">
+                                <span id="currentTime">00:00</span> / <span id="duration">00:00</span>
+                            </div>
+                        </div>
+
+                        <div class="controls-right">
+                            <div class="quality-selector-container">
+                                <button class="control-btn quality-btn" id="qualityBtn" title="Quality">
+                                    <i class="fa-solid fa-gear"></i> <span id="currentQualityDisplay">Auto</span>
+                                </button>
+                                <div class="quality-menu glass" id="qualityMenu">
+                                    <div class="quality-option active" data-level="-1">Auto</div>
+                                    <!-- Quality levels will be injected here -->
+                                </div>
+                            </div>
+
+                            <button class="control-btn" id="fullscreenBtn" title="Fullscreen">
+                                <i class="fa-solid fa-expand" id="fullscreenIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
