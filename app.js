@@ -261,8 +261,24 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingOverlay.classList.add('active');
         
         try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('Network response was not ok');
+            let response;
+            let isError = false;
+            
+            // 1. Try to fetch directly first
+            try {
+                response = await fetch(url);
+                if (!response.ok) isError = true;
+            } catch (e) {
+                isError = true;
+            }
+
+            // 2. If direct fetch fails (CORS), use our Vercel Proxy
+            if (isError) {
+                console.log('Direct fetch failed, trying Vercel proxy...');
+                response = await fetch(`/api/proxy?url=${encodeURIComponent(url)}`);
+                if (!response.ok) throw new Error('Proxy fetch failed');
+            }
+
             const content = await response.text();
             
             if (content.includes('#EXTINF')) {
