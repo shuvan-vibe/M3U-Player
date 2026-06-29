@@ -281,7 +281,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const content = await response.text();
             
-            if (content.includes('#EXTINF')) {
+            // Check if it's an HLS stream manifest rather than an IPTV playlist
+            const isHlsStream = content.includes('#EXT-X-TARGETDURATION') || content.includes('#EXT-X-STREAM-INF');
+            
+            if (content.includes('#EXTINF') && !isHlsStream) {
                 allChannels = parseM3U(content, url);
                 if (allChannels.length > 0) {
                     channelSidebar.style.display = 'flex';
