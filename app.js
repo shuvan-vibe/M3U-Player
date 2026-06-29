@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('videoElement');
     const streamUrlInput = document.getElementById('streamUrl');
     const loadBtn = document.getElementById('loadBtn');
+    const useProxyToggle = document.getElementById('useProxyToggle');
     
     // Controls
     const playPauseBtn = document.getElementById('playPauseBtn');
@@ -310,6 +311,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const playStream = (url) => {
         if (!url) return;
         
+        let playUrl = url;
+        if (useProxyToggle && useProxyToggle.checked && !url.startsWith('/api/proxy')) {
+            playUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+        }
+        
         loadingOverlay.classList.add('active');
 
         if (Hls.isSupported()) {
@@ -318,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             hls = new Hls();
-            hls.loadSource(url);
+            hls.loadSource(playUrl);
             hls.attachMedia(video);
             
             hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
